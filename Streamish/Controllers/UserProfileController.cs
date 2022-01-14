@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Streamish.Models;
 using Streamish.Repositories;
 using System;
@@ -21,6 +22,7 @@ namespace Streamish.Controllers
         }
 
         // GET: api/<UserProfileController>
+        [Authorize]
         [HttpGet]
         public IEnumerable<string> Get()
         {
@@ -28,6 +30,7 @@ namespace Streamish.Controllers
         }
 
         // GET api/<UserProfileController>/5
+        [Authorize]
         [HttpGet("{id}")]
         public string Get(int id)
         {
@@ -35,23 +38,26 @@ namespace Streamish.Controllers
         }
 
         // POST api/<UserProfileController>
+        [Authorize]
         [HttpPost]
         public void Post([FromBody] string value)
         {
         }
 
         // PUT api/<UserProfileController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
+        //[Authorize]
+        //[HttpPut("{id}")]
+        //public void Put(int id, [FromBody] string value)
+        //{
+        //}
 
         // DELETE api/<UserProfileController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
-
+        //[Authorize]
+        //[HttpDelete("{id}")]
+        //public void Delete(int id)
+        //{
+        //}
+        [Authorize]
         [HttpGet("GetByIdWithVideos")]
         public IActionResult GetByIdWithVideos(int id)
         {
@@ -63,5 +69,37 @@ namespace Streamish.Controllers
             return Ok(up);
         }
 
+        [Authorize]
+        [HttpGet("{firebaseUserId}")]
+            public IActionResult GetByFirebaseUserId(string firebaseUserId)
+            {
+                var userProfile =  _upRepo.GetByFirebaseUserId(firebaseUserId);
+                if (userProfile == null)
+                {
+                    return NotFound();
+                }
+                return Ok(userProfile);
+            }
+        [Authorize]
+        [HttpGet("DoesUserExist/{firebaseUserId}")]
+            public IActionResult DoesUserExist(string firebaseUserId)
+            {
+                var userProfile = _upRepo.GetByFirebaseUserId(firebaseUserId);
+                if (userProfile == null)
+                {
+                    return NotFound();
+                }
+                return Ok();
+            }
+        //[Authorize]
+        //[HttpPost]
+        //    public IActionResult Register(UserProfile userProfile)
+        //    {
+        //        // All newly registered users start out as a "user" user type (i.e. they are not admins)
+        //        userProfile.UserTypeId = UserType.USER_TYPE_ID;
+        //    _upRepo.Add(userProfile);
+        //        return CreatedAtAction(
+        //            nameof(GetByFirebaseUserId), new { firebaseUserId = userProfile.FirebaseUserId }, userProfile);
+        //    }
+        }
     }
-}
